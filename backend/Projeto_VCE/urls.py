@@ -22,3 +22,10 @@ urlpatterns = [
     path ('api/', include('exams.urls')),
     path ('api/', include('pacients.urls'))
 ]
+
+# Site Admin - http://127.0.0.1:8000/admin/
+# Registar/Alterar/Apagar/... Exames - http://127.0.0.1:8000/api/exams/
+# Registar/Alterar/Apagar/... Pacientes- http://127.0.0.1:8000/api/Pacientes/
+# Registar/Alterar/Apagar/... Users - http://127.0.0.1:8000/api/users/
+# Login - http://127.0.0.1:8000/api/token/login
+# Logout - http://127.0.0.1:8000/api/token/logout
