@@ -5,12 +5,11 @@ from django.contrib.auth.models import AbstractUser, Group
 class user(AbstractUser): 
     email = models.EmailField(verbose_name='email', max_length=255, unique=True)
 
-    '''
     NOT_MEDIC = 0
     IS_MEDIC = 1
     MEDIC_CHOICES = [(NOT_MEDIC, 'No'), (IS_MEDIC, 'Yes')]
     Medic = models.IntegerField(choices=MEDIC_CHOICES)
-    '''
+    
     REQUIRED_FIELDS = ('first_name', 'last_name', 'email')
 
     USERNAME_FIELD = 'username'
