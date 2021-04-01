@@ -9,6 +9,9 @@ class exam(models.Model):
     ExamNotes = models.TextField(max_length=1000, null=False)
     ExamResult = models.TextField(max_length=1000, null=False)
 
+    
+
+
     def __str__(self):
         return str(self.IDExam)
 
