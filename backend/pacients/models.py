@@ -7,7 +7,8 @@ class pacient(models.Model):
     FirstName = models.CharField(max_length=50, null=False)
     LastName = models.CharField(max_length=50, null=False)
     BirthDate = models.DateField(null=False)
-    
+    TotalExams = models.IntegerField(unique=True, null=False)
+
     GENDER_MALE = 0
     GENDER_FEMALE = 1
     GENDER_NOTTOSAY = 2
@@ -16,7 +17,6 @@ class pacient(models.Model):
 
     #Gender = models.CharField(max_length=50, null=False) #Masculinho, Feminino, prefiro não divulgar
     
-    TotalExams = models.IntegerField(unique=True, null=False)
     Remarks = models.TextField(max_length=1000, null=False)
 
     def __str__(self):
