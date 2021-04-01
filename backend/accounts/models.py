@@ -10,7 +10,7 @@ class user(AbstractUser):
     MEDIC_CHOICES = [(NOT_MEDIC, 'No'), (IS_MEDIC, 'Yes')]
     Medic = models.IntegerField(choices=MEDIC_CHOICES)
     
-    REQUIRED_FIELDS = ('first_name', 'last_name', 'email')
+    REQUIRED_FIELDS = ('first_name', 'last_name', 'email', 'Medic')
 
     USERNAME_FIELD = 'username'
 
