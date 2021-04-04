@@ -1,7 +1,7 @@
 from rest_framework.serializers import ModelSerializer
-from .models import pacient
+from .models import Pacient
 
 class PacientSerializer(ModelSerializer):
     class Meta:
-        model = pacient
-        fields = ['IDPacient', 'IDPacientAnonym', 'FirstName', 'LastName', 'BirthDate', 'Gender', 'TotalExams', 'Remarks']
+        model = Pacient
+        fields = ['id_pacient', 'first_name', 'last_name', 'birth_date', 'gender', 'total_exams', 'remarks']

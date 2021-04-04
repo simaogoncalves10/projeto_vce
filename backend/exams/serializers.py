@@ -1,9 +1,7 @@
 from rest_framework.serializers import ModelSerializer
-from .models import exam
+from .models import Exam
 
 class ExamSerializer(ModelSerializer):
     class Meta:
-        model = exam
-        fields = ['IDExam', 'ExamDate', 'ExamType', 'ExamNotes', 'ExamResult']
-
-    #IDPacientAnonym = models.ForeignKey(pacients.pacients, on_delete=models.CASCADE, default = None, IDPacientAnonym) #on_delete serve para caso um paciente seja removido, os exames serem removidos (e nunca vice-versa)
+        model = Exam
+        fields = ['id_exam', 'id_pacient_anonym', 'exam_date', 'exam_type', 'exam_notes', 'exam_result']

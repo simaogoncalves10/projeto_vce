@@ -1,28 +1,23 @@
 from django.db import models
 from django.db.models import UniqueConstraint
 
-class pacient(models.Model):
-    IDPacient = models.AutoField(unique=True, primary_key=True, null=False)
-    IDPacientAnonym = models.IntegerField(unique=True, null=False)
-    FirstName = models.CharField(max_length=50, null=False)
-    LastName = models.CharField(max_length=50, null=False)
-    BirthDate = models.DateField(null=False)
-    TotalExams = models.IntegerField(unique=True, null=False)
+class Pacient(models.Model):
+    id_pacient = models.AutoField(unique=True, primary_key=True, null=False)
+    first_name = models.CharField(max_length=50, null=False)
+    last_name = models.CharField(max_length=50, null=False)
+    birth_date = models.DateField(null=False)
+    total_exams = models.IntegerField(unique=True, null=False)
 
-    GENDER_MALE = 0
-    GENDER_FEMALE = 1
-    GENDER_NOTTOSAY = 2
-    GENDER_CHOICES = [(GENDER_MALE, 'Male'), (GENDER_FEMALE, 'Female'), (GENDER_NOTTOSAY, 'Prefer not to say')]
-    Gender = models.IntegerField(choices=GENDER_CHOICES)
-
-    #Gender = models.CharField(max_length=50, null=False) #Masculinho, Feminino, prefiro não divulgar
+    gender_male = 0
+    gender_female = 1
+    gender_not_to_say = 2
+    gender_choices = [(gender_male, 'Male'), (gender_female, 'Female'), (gender_not_to_say, 'Prefer not to say')]
+    Gender = models.IntegerField(choices=gender_choices)
     
-    Remarks = models.TextField(max_length=1000, null=False)
+    remarks = models.TextField(max_length=1000, null=False)
 
     def __str__(self):
-        return self.FirstName
+        return self.first_name
 
     class Meta:
-        #Chave primária composta
-        ordering = ['IDPacient']
-        UniqueConstraint(fields = ['IDPacient', 'IDPacientAnonym'], name = 'IDPacient_CPK') #CPK = Composite Primary Key
+        ordering = ['id_pacient']
