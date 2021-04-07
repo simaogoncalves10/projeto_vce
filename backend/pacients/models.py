@@ -12,7 +12,7 @@ class Pacient(models.Model):
     gender_female = 1
     gender_not_to_say = 2
     gender_choices = [(gender_male, 'Male'), (gender_female, 'Female'), (gender_not_to_say, 'Prefer not to say')]
-    Gender = models.IntegerField(choices=gender_choices)
+    gender = models.IntegerField(choices=gender_choices)
     
     remarks = models.TextField(max_length=1000, null=False)
 
