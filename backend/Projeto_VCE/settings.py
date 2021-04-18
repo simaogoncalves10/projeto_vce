@@ -30,7 +30,8 @@ INSTALLED_APPS = [
     'djoser',
     'accounts',
     'exams',
-    'pacients'
+    'pacients',
+    'vces'
 ]
 
 MIDDLEWARE = [
@@ -72,7 +73,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'system_vce',
         'USER': 'postgres',
-        'PASSWORD': 'password123',
+        'PASSWORD': 'juveleu76',
         'HOST': 'localhost'
     }
 }
@@ -166,5 +167,11 @@ STATICFILES_DIRS = [
 ]
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+# Base url to serve media files
+MEDIA_URL = '/media/'
+
+# Path where media is stored
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 AUTH_USER_MODEL = 'accounts.User'
