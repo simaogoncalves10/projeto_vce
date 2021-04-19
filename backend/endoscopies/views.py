@@ -46,6 +46,9 @@ class Endoscopy_APIView_Detail(APIView):
         
     def delete(self, request, id, format=None):
         try:
+            if Endoscopy.objects.get(pk=id):
+                filtered_images=Image.objects.filter(id_endoscopy=id)
+                filtered_images.delete()
             endoscopy = Endoscopy.objects.get(pk=id)
             endoscopy.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)

@@ -11,7 +11,7 @@ urlpatterns = [
     path ('auth/', include('djoser.urls.jwt')),
     path ('api/', include('exams.urls')),
     path ('api/', include('pacients.urls')),
-    path ('endoscopies/', include('endoscopies.urls')),
+    path ('api/', include('endoscopies.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns += [re_path(r'^.*', TemplateView.as_view(template_name='index.html'))]
@@ -27,6 +27,6 @@ urlpatterns += [re_path(r'^.*', TemplateView.as_view(template_name='index.html')
 # Reset Password - http://127.0.0.1:8000/auth/users/reset_password/
 # Confirmar Password - http://127.0.0.1:8000/auth/users/reset_password_confirm/
 
-# Registar/Alterar/Apagar/... Exames - http://127.0.0.1:8000/api/exams/
-
-# Registar/Alterar/Apagar/... Pacientes- http://127.0.0.1:8000/api/Pacientes/
+# Registar/Alterar/Apagar/... Exames - http://127.0.0.1:8000/api/exams/<id>/
+# Registar/Alterar/Apagar/... Pacientes- http://127.0.0.1:8000/api/pacients/<id>/
+# Registar//Apagar/... Endoscopias- http://127.0.0.1:8000/api/endoscopies/<id>/
