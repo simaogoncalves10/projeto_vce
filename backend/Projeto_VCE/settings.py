@@ -31,7 +31,7 @@ INSTALLED_APPS = [
     'accounts',
     'exams',
     'pacients',
-    'vces'
+    'endoscopies'
 ]
 
 MIDDLEWARE = [
@@ -42,7 +42,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-]
+    ]#'corsheaders.middleware.CorsMiddleware',
+
 
 ROOT_URLCONF = 'Projeto_VCE.urls'
 
@@ -170,8 +171,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Base url to serve media files
 MEDIA_URL = '/media/'
-
 # Path where media is stored
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
-
 AUTH_USER_MODEL = 'accounts.User'
+CORS_ORIGIN_ALLOW_ALL = True
