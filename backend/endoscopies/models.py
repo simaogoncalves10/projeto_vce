@@ -12,7 +12,7 @@ class Endoscopy(models.Model):
 
 class Image(models.Model):
 	name = models.CharField(max_length=50, null=False, blank=True)
-	image = models.ImageField(upload_to="images/%Y/%m/%d", null=False, blank=True)
+	image = models.ImageField(upload_to="endoscopies/%Y/%m/%d", null=False, blank=True)
 	id_endoscopy = models.ForeignKey(Endoscopy, on_delete=models.CASCADE, default = None) 
 
 	def __str__(self):
