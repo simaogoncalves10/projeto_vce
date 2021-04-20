@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models.testing import TestingDataset, TestImage
+from .models import TestingDataset, TestingImage
 
 
 class TestingDatasetSerializer(serializers.ModelSerializer):
@@ -8,9 +8,9 @@ class TestingDatasetSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class TestImageSerializer(serializers.ModelSerializer):
+class TestingImageSerializer(serializers.ModelSerializer):
     class Meta:
-        model = TestImage
+        model = TestingImage
         fields = '__all__'
 
 

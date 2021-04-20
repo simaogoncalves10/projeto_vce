@@ -34,6 +34,8 @@ INSTALLED_APPS = [
     'endoscopies',
     'als',
     'unlabeled',
+    'training',
+    'testing',
 ]
 
 MIDDLEWARE = [

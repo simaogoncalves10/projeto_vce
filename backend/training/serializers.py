@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models.training import TrainingDataset, TrainImage
+from .models import TrainingDataset, TrainingImage
 
 
 class TrainingDatasetSerializer(serializers.ModelSerializer):
@@ -8,9 +8,9 @@ class TrainingDatasetSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class TrainImageSerializer(serializers.ModelSerializer):
+class TrainingImageSerializer(serializers.ModelSerializer):
     class Meta:
-        model = TrainImage
+        model = TrainingImage
         fields = '__all__'
 
 
