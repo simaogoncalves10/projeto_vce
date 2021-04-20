@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class AL(models.Model):
     name = models.CharField(max_length=50, null=False, blank=True)
     n_instances = models.IntegerField(null=False, default=10)
@@ -19,4 +20,17 @@ class AL(models.Model):
         ('HighestEntropyUncertaintySampling', 'HighestEntropyUncertaintySampling'),
         ('OutliersWithRepresentativeSampling', 'OutliersWithRepresentativeSampling'),
     )
+    
     query_technic = models.CharField(max_length=50, choices=technics, default='RandomSampling')
+
+    classifiers = (
+        ('cnn', 'cnn'),
+        ('vgg16', 'vgg16'),
+        ('vgg19', 'vgg19'),
+        ('resnet50','resnet50'),
+        ('resnet50v2', 'resnet50v2'),
+        ('xception', 'xception'),
+        ('inceptionv3', 'inceptionv3'),
+    )
+
+    model = models.CharField(max_length=50, choices=classifiers, default='cnn')
