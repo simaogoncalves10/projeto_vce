@@ -31,3 +31,6 @@ urlpatterns += [re_path(r'^.*', TemplateView.as_view(template_name='index.html')
 # Registar/Alterar/Apagar/... Exames - http://127.0.0.1:8000/api/exams/<id>/
 # Registar/Alterar/Apagar/... Pacientes- http://127.0.0.1:8000/api/pacients/<id>/
 # Registar//Apagar/... Endoscopias- http://127.0.0.1:8000/api/endoscopies/<id>/
+# Registar/Alterar/Apagar/... Active Learning- http://127.0.0.1:8000/api/als/<id>/
+# Ativar Active Learning- http://127.0.0.1:8000/api/als/activated/<id>/ sem id obtem o AL ativado e com id ativa esse o AL com esse id
+

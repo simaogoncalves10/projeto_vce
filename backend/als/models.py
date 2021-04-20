@@ -35,3 +35,4 @@ class AL(models.Model):
     )
 
     model = models.CharField(max_length=50, choices=classifiers, default='cnn')
+
