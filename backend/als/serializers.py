@@ -3,6 +3,13 @@ from .models import AL
 
 
 class ALSerializer(serializers.ModelSerializer):
+    def validate(self, data):
+        if data['n_instances'] <= 0 :
+            raise serializers.ValidationError("n_instances has to be bigger than 0")
+        if data['accuracy_goal'] <= 0 or data['accuracy_goal'] > 100 :
+            raise serializers.ValidationError("accuracy_goal has to be between [0,100]")
+        return data
+
     class Meta:
         model = AL
         fields = '__all__'
