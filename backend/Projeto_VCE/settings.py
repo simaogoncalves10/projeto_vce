@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'pacients',
     'endoscopies',
     'als',
+    'unlabeled',
 ]
 
 MIDDLEWARE = [

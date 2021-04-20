@@ -13,6 +13,7 @@ urlpatterns = [
     path ('api/', include('pacients.urls')),
     path ('api/', include('endoscopies.urls')),
     path ('api/', include('als.urls')),
+    path ('api/', include('unlabeled.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns += [re_path(r'^.*', TemplateView.as_view(template_name='index.html'))]

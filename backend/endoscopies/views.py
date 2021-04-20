@@ -27,7 +27,7 @@ class Endoscopy_APIView(APIView):
             files_list = request.FILES.getlist('images')
             if serializer.is_valid():
                 for item in files_list:
-                    f = Image.objects.create(name=request.data['name'], image=item, id_endoscopy=endoscopy)
+                    f = Image.objects.create(image=item, id_endoscopy=endoscopy)
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
    
