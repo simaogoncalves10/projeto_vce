@@ -65,19 +65,29 @@ class ActivateALsViewSet_Detail(APIView):
     def get(self, request, pk, format=None):
         
         try:
-            to_desactivate=AL.objects.get(activated=True)
-            to_desactivate.activated = False
+            try:
+                to_desactivate=AL.objects.get(activated=True)
+                to_desactivate.activated = False
 
-            to_activate=AL.objects.get(id=pk)
-            to_activate.activated = True
-            
-            to_desactivate.save() 
-            to_activate.save() 
-  
+                to_activate=AL.objects.get(id=pk)
+                to_activate.activated = True
+                
+                to_desactivate.save() 
+                to_activate.save() 
+    
 
-            serializer = ALSerializer(to_activate)
+                serializer = ALSerializer(to_activate)
 
-            return Response(serializer.data)
+                return Response(serializer.data)
+            except AL.DoesNotExist:
+   
+                to_activate=AL.objects.get(id=pk)
+                to_activate.activated = True
+                to_activate.save() 
+    
+                serializer = ALSerializer(to_activate)
+
+                return Response(serializer.data)
         except AL.DoesNotExist:
             raise Http404            
         
