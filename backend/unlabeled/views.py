@@ -37,10 +37,10 @@ class Unlabeled_APIView_Detail(APIView):
 
     def get(self, request, id, format=None):
         try:
-            if UnlabeledDataset.objects.get(pk=id):
-                    filtered_images=UnlabeledImage.objects.filter(id_dataset=id)
-                    serializer = UnlabeledImageSerializer(filtered_images, many=True)
-                    return Response(serializer.data)
+            dataset=UnlabeledDataset.objects.get(pk=id)
+            filtered_images=UnlabeledImage.objects.filter(id_dataset=dataset.id)
+            serializer = UnlabeledImageSerializer(filtered_images, many=True)
+            return Response(serializer.data)
         except UnlabeledDataset.DoesNotExist:
             raise Http404
         
