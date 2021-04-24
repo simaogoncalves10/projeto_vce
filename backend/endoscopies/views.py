@@ -74,3 +74,4 @@ class Endoscopy_APIView_Detail(APIView):
         except Endoscopy.DoesNotExist:
             raise Http404
         
+

@@ -15,6 +15,7 @@ class Image(models.Model):
 	def __str__(self):
 		return self.name
 
+
 @receiver(post_delete, sender=Image)
 def submission_delete(sender, instance, **kwargs):
     instance.image.delete(False) 

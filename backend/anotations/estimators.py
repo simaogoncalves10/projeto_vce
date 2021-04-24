@@ -1,3 +1,4 @@
+from tensorflow.keras import layers, models, optimizers
 from tensorflow.keras.applications.vgg16 import VGG16
 from tensorflow.keras.applications.vgg19 import VGG19
 from tensorflow.keras.applications.resnet50 import ResNet50
@@ -9,8 +10,7 @@ import tensorflow as tf
 input_shape = (128, 128, 3)
 tensor = tf.keras.Input(input_shape)
 
-
-def create_cnn():
+def cnn():
     model = models.Sequential()
     model.add(layers.Conv2D(32, (4, 4), activation="relu"))
     model.add(layers.Conv2D(32, (4, 4), activation="relu"))
@@ -29,7 +29,7 @@ def create_cnn():
     return model
 
 
-def create_vgg16():
+def vgg16():
     conv_base = VGG16(weights="imagenet", include_top=False, input_shape=input_shape)
 
     model = models.Sequential()
@@ -49,7 +49,7 @@ def create_vgg16():
     return model
 
 
-def create_vgg19():
+def vgg19():
     conv_base = VGG19(weights="imagenet", include_top=False, input_shape=input_shape)
 
     model = models.Sequential()
@@ -69,7 +69,7 @@ def create_vgg19():
     return model
 
 
-def create_resnet50():
+def resnet50():
     conv_base = ResNet50(weights="imagenet", include_top=False, input_shape=input_shape)
 
     model = models.Sequential()
@@ -89,7 +89,7 @@ def create_resnet50():
     return model
 
 
-def create_resnet50v2():
+def resnet50v2():
     conv_base = ResNet50V2(
         weights="imagenet", include_top=False, input_shape=input_shape
     )
@@ -111,7 +111,7 @@ def create_resnet50v2():
     return model
 
 
-def create_xception():
+def xception():
     conv_base = Xception(weights="imagenet", include_top=False, input_shape=input_shape)
 
     model = models.Sequential()
@@ -131,7 +131,7 @@ def create_xception():
     return model
 
 
-def create_inceptionv3():
+def inceptionv3():
     conv_base = InceptionV3(
         weights="imagenet", include_top=False, input_shape=input_shape
     )
@@ -151,3 +151,5 @@ def create_inceptionv3():
         metrics=["acc"],
     )
     return model
+
+
