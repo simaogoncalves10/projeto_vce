@@ -6,7 +6,10 @@ from .models import TrainingDataset, TrainingImage
 from rest_framework import status
 from django.http import Http404
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
-    
+import tempfile, zipfile
+from django.http import HttpResponse
+from wsgiref.util import FileWrapper
+
     
 class Training_APIView(APIView):
     parser_classes = (MultiPartParser, FormParser, JSONParser)
@@ -41,9 +44,28 @@ class Training_APIView_Detail(APIView):
     def get(self, request, id, format=None):
         try:
             if TrainingDataset.objects.get(pk=id):
-                    filtered_images=TrainingImage.objects.filter(id_dataset=id)
-                    serializer = TrainingImageSerializer(filtered_images, many=True)
-                    return Response(serializer.data)
+                informative_images=TrainingImage.objects.filter(id_dataset=id,label=True)
+                non_informative_images=TrainingImage.objects.filter(id_dataset=id,label=False)
+
+                
+                temp = tempfile.TemporaryFile()
+                archive = zipfile.ZipFile(temp, 'w', zipfile.ZIP_DEFLATED)
+                index=0
+                for image in informative_images:
+                    index=index+1
+                    archive.write(image.image.path, 'informative/file%d.png' % index) 
+                index=0
+                for image in non_informative_images:
+                    index=index+1
+                    archive.write(image.image.path, 'non_informative/file%d.png' % index) 
+                archive.close()
+
+                temp.seek(0)
+                wrapper = FileWrapper(temp)
+
+                response = HttpResponse(wrapper, content_type='application/zip')
+                response['Content-Disposition'] = 'attachment; filename=test.zip'
+                return response
         except TrainingDataset.DoesNotExist:
             raise Http404
         

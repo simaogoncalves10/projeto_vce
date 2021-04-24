@@ -92,5 +92,3 @@ class ActivateALsViewSet_Detail(APIView):
             raise Http404            
         
 
-        
-        

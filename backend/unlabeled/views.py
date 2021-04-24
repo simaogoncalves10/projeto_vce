@@ -6,6 +6,9 @@ from .models import UnlabeledDataset, UnlabeledImage
 from rest_framework import status
 from django.http import Http404
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+import tempfile, zipfile
+from django.http import HttpResponse
+from wsgiref.util import FileWrapper
     
     
 class Unlabeled_APIView(APIView):
@@ -39,8 +42,22 @@ class Unlabeled_APIView_Detail(APIView):
         try:
             dataset=UnlabeledDataset.objects.get(pk=id)
             filtered_images=UnlabeledImage.objects.filter(id_dataset=dataset.id)
-            serializer = UnlabeledImageSerializer(filtered_images, many=True)
-            return Response(serializer.data)
+            
+            temp = tempfile.TemporaryFile()
+            archive = zipfile.ZipFile(temp, 'w', zipfile.ZIP_DEFLATED)
+            index=0
+            for image in filtered_images:
+                index=index+1
+                archive.write(image.image.path, 'file%d.png' % index)
+
+            archive.close()
+
+            temp.seek(0)
+            wrapper = FileWrapper(temp)
+
+            response = HttpResponse(wrapper, content_type='application/zip')
+            response['Content-Disposition'] = 'attachment; filename=test.zip'
+            return response
         except UnlabeledDataset.DoesNotExist:
             raise Http404
         

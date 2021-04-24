@@ -6,6 +6,9 @@ from .models import Image, Endoscopy
 from rest_framework import status
 from django.http import Http404
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+import tempfile, zipfile
+from django.http import HttpResponse
+from wsgiref.util import FileWrapper
     
     
 class Endoscopy_APIView(APIView):
@@ -38,9 +41,25 @@ class Endoscopy_APIView_Detail(APIView):
     def get(self, request, id, format=None):
         try:
             if Endoscopy.objects.get(pk=id):
-                    filtered_images=Image.objects.filter(id_endoscopy=id)
-                    serializer = ImageSerializer(filtered_images, many=True)
-                    return Response(serializer.data)
+                filtered_images=Image.objects.filter(id_endoscopy=id)
+                temp = tempfile.TemporaryFile()
+                archive = zipfile.ZipFile(temp, 'w', zipfile.ZIP_DEFLATED)
+                index=0
+                for image in filtered_images:
+                    index=index+1
+
+                    archive.write(image.image.path, 'file%d.png' % index) # 'file%d.png' will be the
+                                                                # name of the file in the
+                                                                # zip
+                archive.close()
+
+                temp.seek(0)
+                wrapper = FileWrapper(temp)
+
+                response = HttpResponse(wrapper, content_type='application/zip')
+                response['Content-Disposition'] = 'attachment; filename=test.zip'
+
+                return response
         except Endoscopy.DoesNotExist:
             raise Http404
         
