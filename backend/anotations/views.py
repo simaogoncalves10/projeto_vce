@@ -27,10 +27,11 @@ class AnotationsViewSet(APIView):
             temp = tempfile.TemporaryFile()
             archive = zipfile.ZipFile(temp, 'w', zipfile.ZIP_DEFLATED)
 
-            i=0
+
             for idx in index:
-                i+=1
-                image=UnlabeledImage.objects.filter(id_dataset=unlabeled_dataset.id)[int(idx)]
+                image=UnlabeledImage.objects.filter(id_dataset=unlabeled_dataset.id,blocked=False)[int(idx)]
+                image.blocked=True
+                image.save()
                 archive.write(image.image.path, '%d.png' % image.id)
 
             archive.close()
@@ -43,7 +44,7 @@ class AnotationsViewSet(APIView):
             return response
         
     def load_images(self,unlabeled_dataset,training_dataset):
-            unlabeled_images=UnlabeledImage.objects.filter(id_dataset=unlabeled_dataset.id)
+            unlabeled_images=UnlabeledImage.objects.filter(id_dataset=unlabeled_dataset.id, blocked=False)
 
             pool=[]
             #unlabeled_images to numpy  
@@ -72,7 +73,7 @@ class AnotationsViewSet(APIView):
         try:
             #get active learning technic activated for training
             al=AL.objects.get(training_activated=True)
-            print(al.n_instances)
+  
             if(al.is_quering): return Response("Try later please, get anotations is busy. This helps avoid concurrency")
             else:
                 al.is_quering=True

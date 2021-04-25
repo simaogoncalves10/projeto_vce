@@ -10,6 +10,7 @@ class UnlabeledDataset(models.Model):
 class UnlabeledImage(models.Model):
 	image = models.ImageField(upload_to="unlabeled/%Y/%m/%d", null=False, blank=True)
 	id_dataset = models.ForeignKey(UnlabeledDataset, on_delete=models.CASCADE, default = None) 
+	blocked = models.BooleanField(default=False, editable=False)
 
 @receiver(post_delete, sender=UnlabeledImage)
 def submission_delete(sender, instance, **kwargs):
