@@ -50,27 +50,27 @@ class AL_APIView_Detail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
         
-class ActivateALsViewSet(APIView):
+class TrainActivateALsViewSet(APIView):
     def get(self, request, format=None):
         try:
-            al=AL.objects.get(activated=True)
+            al=AL.objects.get(training_activated=True)
             serializer = ALSerializer(al)
             return Response(serializer.data)
         except AL.DoesNotExist:
             raise Http404
 
 
-class ActivateALsViewSet_Detail(APIView):
+class TrainActivateALsViewSet_Detail(APIView):
 
     def get(self, request, pk, format=None):
         
         try:
             try:
-                to_desactivate=AL.objects.get(activated=True)
-                to_desactivate.activated = False
+                to_desactivate=AL.objects.get(training_activated=True)
+                to_desactivate.training_activated = False
 
                 to_activate=AL.objects.get(id=pk)
-                to_activate.activated = True
+                to_activate.training_activated = True
                 
                 to_desactivate.save() 
                 to_activate.save() 
@@ -82,7 +82,7 @@ class ActivateALsViewSet_Detail(APIView):
             except AL.DoesNotExist:
    
                 to_activate=AL.objects.get(id=pk)
-                to_activate.activated = True
+                to_activate.training_activated = True
                 to_activate.save() 
     
                 serializer = ALSerializer(to_activate)
@@ -92,3 +92,44 @@ class ActivateALsViewSet_Detail(APIView):
             raise Http404            
         
 
+class PredictActivateALsViewSet(APIView):
+    def get(self, request, format=None):
+        try:
+            al=AL.objects.get(predicting_activated=True)
+            serializer = ALSerializer(al)
+            return Response(serializer.data)
+        except AL.DoesNotExist:
+            raise Http404
+
+
+class PredictActivateALsViewSet_Detail(APIView):
+
+    def get(self, request, pk, format=None):
+        
+        try:
+            try:
+                to_desactivate=AL.objects.get(predicting_activated=True)
+                to_desactivate.predicting_activated = False
+
+                to_activate=AL.objects.get(id=pk)
+                to_activate.predicting_activated = True
+                
+                to_desactivate.save() 
+                to_activate.save() 
+    
+
+                serializer = ALSerializer(to_activate)
+
+                return Response(serializer.data)
+            except AL.DoesNotExist:
+   
+                to_activate=AL.objects.get(id=pk)
+                to_activate.predicting_activated = True
+                to_activate.save() 
+    
+                serializer = ALSerializer(to_activate)
+
+                return Response(serializer.data)
+        except AL.DoesNotExist:
+            raise Http404            
+        

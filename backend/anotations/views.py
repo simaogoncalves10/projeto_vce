@@ -71,36 +71,43 @@ class AnotationsViewSet(APIView):
     def get(self, request, format=None):
         try:
             #get active learning technic activated for training
-            al=AL.objects.get(activated=True)
-
-            #globals allows to call a function by a string  Ex: cnn ->  globals()["cnn"]
-            model=globals()[al.model]
-            classifier = KerasClassifier(model)
-
-            #globals allows to call a function by a string  Ex: UncertaintySampling(10) ->  globals()["cnn"](10)
-            query_techinc=globals()[al.query_technic](al.n_instances)
-
-            #load images
-            unlabeled_dataset=UnlabeledDataset.objects.get(id_al=al.id)
-
-            #get training images from this al
-            training_dataset=TrainingDataset.objects.get(id_al=al.id)
-
-            pool, x_train, y_train = self.load_images(unlabeled_dataset,training_dataset)
-
-            #create modal framework active learning instance
-            learner = ActiveLearner(
-                classifier,
-                query_techinc,
-                np.array(x_train,dtype = float),
-                np.array(y_train,dtype = float)
-            )
-
-            #get images to anotate
-            index,_=learner.query(np.array(pool))
+            al=AL.objects.get(training_activated=True)
+            print(al.n_instances)
+            if(al.is_quering): return Response("Try later please, get anotations is busy. This helps avoid concurrency")
+            else:
+                al.is_quering=True
+                al.save()
+                
+                #globals allows to call a function by a string  Ex: cnn ->  globals()["cnn"]
+                model=globals()[al.model]
+                classifier = KerasClassifier(model)
+                
+                #globals allows to call a function by a string  Ex: UncertaintySampling(10) ->  globals()["cnn"](10)
+                query_techinc=globals()[al.query_technic](al.n_instances)
+        
+                #load images
+                unlabeled_dataset=UnlabeledDataset.objects.get(id_al=al.id)
             
-            # return response with zip file with images
-            return self.zip(index,unlabeled_dataset)
+                #get training images from this al
+                training_dataset=TrainingDataset.objects.get(id_al=al.id)
+            
+                pool, x_train, y_train = self.load_images(unlabeled_dataset,training_dataset)
+                
+                #create modal framework active learning instance
+                learner = ActiveLearner(
+                    classifier,
+                    query_techinc,
+                    np.array(x_train,dtype = float),
+                    np.array(y_train,dtype = float)
+                )
+    
+                #get images to anotate
+                index,_=learner.query(np.array(pool))
+
+                al.is_quering=False
+                al.save()
+                # return response with zip file with images
+                return self.zip(index,unlabeled_dataset)
         except AL.DoesNotExist:
             raise Http404
 

@@ -5,7 +5,9 @@ class AL(models.Model):
     name = models.CharField(max_length=50, null=False, blank=True)
     n_instances = models.IntegerField(null=False, default=10)
     accuracy_goal = models.FloatField(null=False, default=85)
-    activated = models.BooleanField(default=False, editable=False)
+    training_activated = models.BooleanField(default=False, editable=False)
+    predicting_activated = models.BooleanField(default=False, editable=False)
+    is_quering = models.BooleanField(default=False, editable=False)
 
     technics = (
         ('RandomSampling', 'RandomSampling'),
