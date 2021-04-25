@@ -27,9 +27,10 @@ class AnotationsViewSet(APIView):
             temp = tempfile.TemporaryFile()
             archive = zipfile.ZipFile(temp, 'w', zipfile.ZIP_DEFLATED)
 
+            images=[]
+            for idx in index: images.append(UnlabeledImage.objects.filter(id_dataset=unlabeled_dataset.id,blocked=False)[int(idx)])
 
-            for idx in index:
-                image=UnlabeledImage.objects.filter(id_dataset=unlabeled_dataset.id,blocked=False)[int(idx)]
+            for image in images:
                 image.blocked=True
                 image.save()
                 archive.write(image.image.path, '%d.png' % image.id)
