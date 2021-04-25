@@ -1,5 +1,5 @@
 import numpy as np
-import tensorflow as tf
+import random
 from abc import ABC, abstractmethod
 from tensorflow.keras import backend as K
 from sklearn.cluster import MiniBatchKMeans
@@ -130,8 +130,6 @@ class OutlierSampling(Query):
         """
         Docs here
         """
-        self.X_validation=kwargs.get("X_validation")
-
 
         super().__init__(n_instances)
 
@@ -139,15 +137,18 @@ class OutlierSampling(Query):
         """
         Docs here
         """
-        self.unlabeled_data = X_pool,
+        random.shuffle(X_pool)
 
+        self.unlabeled_data = X_pool[:int(len(X_pool)*0.9)]
+        self.validation_data = X_pool[int(len(X_pool)*0.9):]
+       
         if learner is None:
             raise ValueError("learner_data param is missing")
 
 
         model = learner.estimator.model
         # Get per-neuron scores from validation data
-        validation_rankings = self.get_validation_rankings(model, self.X_validation)
+        validation_rankings = self.get_validation_rankings(model, self.validation_data)
 
         index=0
         #outliers = {}
@@ -359,7 +360,7 @@ class UncertaintyWithModelOutliersSampling(Query):
             n_instances=100,
         )
         self.outlier_sampling = OutlierSampling(
-            n_instances,X_validation=kwargs.get("X_validation")
+            n_instances,validation_data=kwargs.get("validation_data")
         )
         super().__init__(n_instances)
     
@@ -565,7 +566,7 @@ class OutliersWithRepresentativeSampling(Query):
 
         self.outlier_sampling = OutlierSampling(
             n_instances,
-            X_validation=kwargs.get("X_validation")
+            validation_data=kwargs.get("validation_data")
         )
         super().__init__(n_instances)
 
