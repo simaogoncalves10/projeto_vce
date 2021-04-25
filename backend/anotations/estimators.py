@@ -8,7 +8,6 @@ from tensorflow.keras.applications.inception_v3 import InceptionV3
 import tensorflow as tf
 
 input_shape = (128, 128, 3)
-tensor = tf.keras.Input(input_shape)
 
 def cnn():
     model = models.Sequential()
