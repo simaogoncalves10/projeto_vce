@@ -9,4 +9,5 @@ urlpatterns = [
     path('als/train_activated/<int:pk>/', TrainActivateALsViewSet_Detail.as_view()), 
     path('als/predict_activated/', PredictActivateALsViewSet.as_view()),    
     path('als/predict_activated/<int:pk>/', PredictActivateALsViewSet_Detail.as_view()), 
+    path('als/stats/<int:pk>/', Iteration_APIView_Detail.as_view()), 
 ]

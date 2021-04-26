@@ -2,7 +2,7 @@ from os import path
 from .query import *
 from .estimators import *
 from modAL.models import ActiveLearner
-from als.models import AL
+from als.models import AL, Iteration
 from als.serializers import ALSerializer
 from training.models import TrainingDataset,TrainingImage
 from training.serializers import TrainingDatasetSerializer, TrainingImageSerializer
@@ -129,7 +129,6 @@ class AnotationsViewSet(APIView):
   
         x, y = [],[]
         for id, label in zip(ids, labels):
-            print(id)
             image = UnlabeledImage.objects.get(id=id)
             img = np.array(Image.open(image.image).convert("RGB"))
             x.append(img)
@@ -182,8 +181,10 @@ class AnotationsViewSet(APIView):
             else: y_test.append(0)
 
         learner.estimator.model.save_weights("media/models/%d.h5" % al.id)
-        print(learner.score(np.array(x_test,dtype = float),np.array(y_test,dtype = float), verbose=0))
 
+        accuracy=learner.score(np.array(x_test,dtype = float),np.array(y_test,dtype = float), verbose=0)
+        Iteration.objects.create(accuracy=accuracy, id_al=al)
+        
     def post(self, request, format=None):
         try:
             if len(request.POST.getlist('id'))==len(request.POST.getlist('label')):  

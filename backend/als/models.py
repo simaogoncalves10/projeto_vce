@@ -37,3 +37,8 @@ class AL(models.Model):
     )
 
     model = models.CharField(max_length=50, choices=classifiers, default='cnn')
+
+
+class Iteration(models.Model):
+    accuracy = models.FloatField(null=False, default=0)
+    id_al= models.ForeignKey(AL, on_delete=models.CASCADE, default = None) 

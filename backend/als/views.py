@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import AL
-from .serializers import ALSerializer
+from .models import AL, Iteration
+from .serializers import ALSerializer, IterationSerializer
 from rest_framework import status
 from django.http import Http404
 
@@ -133,3 +133,12 @@ class PredictActivateALsViewSet_Detail(APIView):
         except AL.DoesNotExist:
             raise Http404            
         
+
+class Iteration_APIView_Detail(APIView):
+    serializer_class = IterationSerializer
+
+    def get(self, request, pk, format=None):
+        iteration = Iteration.objects.filter(id_al=pk)
+        serializer = IterationSerializer(iteration, many=True)  
+        return Response(serializer.data)
+

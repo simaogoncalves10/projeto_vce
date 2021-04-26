@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import AL
+from .models import AL, Iteration
 
 
 class ALSerializer(serializers.ModelSerializer):
@@ -12,4 +12,10 @@ class ALSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AL
+        fields = '__all__'
+
+    
+class IterationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Iteration
         fields = '__all__'
