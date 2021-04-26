@@ -32,7 +32,7 @@ class Unlabeled_APIView(APIView):
                 for item in files_list:
                     f = UnlabeledImage.objects.create(image=item, id_dataset=unlabeled)
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
    
 
 class Unlabeled_APIView_Detail(APIView):

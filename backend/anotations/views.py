@@ -1,3 +1,4 @@
+from os import path
 from .query import *
 from .estimators import *
 from modAL.models import ActiveLearner
@@ -14,10 +15,12 @@ from rest_framework.response import Response
 from django.http import Http404
 import tempfile, zipfile
 from django.http import HttpResponse
+from rest_framework import status
 from wsgiref.util import FileWrapper
 import numpy as np
 from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
 from PIL import Image
+from django.views.decorators.http import require_POST
 
 
 class AnotationsViewSet(APIView):
@@ -50,7 +53,7 @@ class AnotationsViewSet(APIView):
             pool=[]
             #unlabeled_images to numpy  
             for image in unlabeled_images: 
-                image.image.open()
+                #image.image.open()
                 img = np.array(Image.open(image.image).convert("RGB"))
                 pool.append(img)
             
@@ -63,10 +66,8 @@ class AnotationsViewSet(APIView):
                 img = np.array(Image.open(image.image).convert("RGB"))
                 x_train.append(img)
 
-                if(image.label==True):
-                    y_train.append(1)
-                else:
-                    y_train.append(0)
+                if(image.label==True): y_train.append(1)
+                else: y_train.append(0)
 
             return pool, x_train, y_train
     
@@ -82,8 +83,9 @@ class AnotationsViewSet(APIView):
                 
                 #globals allows to call a function by a string  Ex: cnn ->  globals()["cnn"]
                 model=globals()[al.model]
+
                 classifier = KerasClassifier(model)
-                
+
                 #globals allows to call a function by a string  Ex: UncertaintySampling(10) ->  globals()["cnn"](10)
                 query_techinc=globals()[al.query_technic](al.n_instances)
         
@@ -103,6 +105,8 @@ class AnotationsViewSet(APIView):
                     np.array(y_train,dtype = float)
                 )
     
+                if(path.exists("media/models/%d.h5" % al.id)): learner.estimator.model.load_weights("media/models/%d.h5" % al.id)
+
                 #get images to anotate
                 index,_=learner.query(np.array(pool))
 
@@ -113,5 +117,85 @@ class AnotationsViewSet(APIView):
         except AL.DoesNotExist:
             raise Http404
 
+    def save_labels(self, ids, labels):
+        al=AL.objects.get(training_activated=True)
+        training_dataset=TrainingDataset.objects.get(pk=al.id)
+        
+        for id, label in zip(ids, labels):
+            image = UnlabeledImage.objects.get(id=id)
+            TrainingImage.objects.create(image=image.image, id_dataset=training_dataset, label=label)
 
+    def train(self,ids,labels):
+  
+        x, y = [],[]
+        for id, label in zip(ids, labels):
+            print(id)
+            image = UnlabeledImage.objects.get(id=id)
+            img = np.array(Image.open(image.image).convert("RGB"))
+            x.append(img)
+            if(label==True): y.append(1)
+            else: y.append(0)
+
+        #get active learning technic activated for training
+        al=AL.objects.get(training_activated=True)
+                        
+        #globals allows to call a function by a string  Ex: cnn ->  globals()["cnn"]
+        model=globals()[al.model]
+        classifier = KerasClassifier(model)
             
+        #globals allows to call a function by a string  Ex: UncertaintySampling(10) ->  globals()["cnn"](10)
+        query_techinc=globals()[al.query_technic](al.n_instances)
+
+        training_images=TrainingImage.objects.filter(id_dataset=al.id)
+
+        x_train, y_train = [], []  
+        #training_images to numpy      
+        for image in training_images: 
+            image.image.open()
+            img = np.array(Image.open(image.image).convert("RGB"))
+            x_train.append(img)
+
+            if(image.label==True): y_train.append(1)
+            else: y_train.append(0)
+        
+        learner = ActiveLearner(
+                classifier,
+                query_techinc,
+                np.array(x_train,dtype = float),
+                np.array(y_train,dtype = float)
+            )
+
+        if(path.exists("media/models/%d.h5" % al.id)): learner.estimator.model.load_weights("media/models/%d.h5" % al.id)
+    
+        learner.teach(x,y)
+
+        testing_images=TestingImage.objects.filter(id_dataset=al.id)
+
+        x_test, y_test = [], []  
+        #testing_images to numpy      
+        for image in testing_images: 
+            image.image.open()
+            img = np.array(Image.open(image.image).convert("RGB"))
+            x_test.append(img)
+
+            if(image.label==True): y_test.append(1)
+            else: y_test.append(0)
+
+        learner.estimator.model.save_weights("media/models/%d.h5" % al.id)
+        print(learner.score(np.array(x_test,dtype = float),np.array(y_test,dtype = float), verbose=0))
+
+    def post(self, request, format=None):
+        try:
+            if len(request.POST.getlist('id'))==len(request.POST.getlist('label')):  
+                
+                ids = request.POST.getlist('id')
+                labels=request.POST.getlist('label')
+                
+                self.train(ids,labels)
+                self.save_labels(ids,labels)
+
+                return Response(status=status.HTTP_201_CREATED)
+
+            return Response("id field and label not have the same length", status=status.HTTP_400_BAD_REQUEST)
+        except:
+            raise
