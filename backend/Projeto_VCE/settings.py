@@ -84,6 +84,8 @@ DATABASES = {
     }
 }
 
+
+
 #EMAIL
 #	email: projetovce21@gmail.com
 #	pass: 123projetovce321

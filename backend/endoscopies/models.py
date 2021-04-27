@@ -8,7 +8,7 @@ class Endoscopy(models.Model):
 	id_exam = models.ForeignKey(Exam, on_delete=models.CASCADE, default = None) 
 
 
-class Image(models.Model):
+class Frame(models.Model):
 	image = models.ImageField(upload_to="endoscopies/%Y/%m/%d", null=False, blank=True)
 	id_endoscopy = models.ForeignKey(Endoscopy, on_delete=models.CASCADE, default = None) 
 
@@ -16,6 +16,6 @@ class Image(models.Model):
 		return self.name
 
 
-@receiver(post_delete, sender=Image)
+@receiver(post_delete, sender=Frame)
 def submission_delete(sender, instance, **kwargs):
     instance.image.delete(False) 

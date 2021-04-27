@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Endoscopy,Image
+from .models import Endoscopy,Frame
 
 
 class EndoscopySerializer(serializers.ModelSerializer):
@@ -8,9 +8,9 @@ class EndoscopySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class ImageSerializer(serializers.ModelSerializer):
+class FrameSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Image 
+        model = Frame
         fields = '__all__'
 
 

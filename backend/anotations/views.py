@@ -20,7 +20,7 @@ from wsgiref.util import FileWrapper
 import numpy as np
 from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
 from PIL import Image
-from django.views.decorators.http import require_POST
+from tensorflow.keras.models import load_model
 
 
 class AnotationsViewSet(APIView):
@@ -47,71 +47,72 @@ class AnotationsViewSet(APIView):
             response['Content-Disposition'] = 'attachment; filename=unlabeled.zip'
             return response
         
-    def load_images(self,unlabeled_dataset,training_dataset):
+    def load_unlabeled_images(self,unlabeled_dataset):
             unlabeled_images=UnlabeledImage.objects.filter(id_dataset=unlabeled_dataset.id, blocked=False)
 
             pool=[]
             #unlabeled_images to numpy  
             for image in unlabeled_images: 
-                #image.image.open()
-                img = np.array(Image.open(image.image).convert("RGB"))
-                pool.append(img)
-            
-            training_images=TrainingImage.objects.filter(id_dataset=training_dataset.id)
-
-            x_train, y_train = [], []  
-            #training_images to numpy      
-            for image in training_images: 
                 image.image.open()
                 img = np.array(Image.open(image.image).convert("RGB"))
-                x_train.append(img)
-
-                if(image.label==True): y_train.append(1)
-                else: y_train.append(0)
-
-            return pool, x_train, y_train
+                pool.append(img)
+        
+            return pool
     
+    def load_train_images(self,training_dataset):
+        training_images=TrainingImage.objects.filter(id_dataset=training_dataset.id)
+
+        x_train, y_train = [], []  
+        #training_images to numpy      
+        for image in training_images: 
+            image.image.open()
+            img = np.array(Image.open(image.image).convert("RGB"))
+            x_train.append(img)
+
+            if(image.label==True): y_train.append(1)
+            else: y_train.append(0)
+        return x_train, y_train
+
     def get(self, request, format=None):
         try:
             #get active learning technic activated for training
             al=AL.objects.get(training_activated=True)
-  
             if(al.is_quering): return Response("Try later please, get anotations is busy. This helps avoid concurrency")
             else:
                 al.is_quering=True
                 al.save()
                 
-                #globals allows to call a function by a string  Ex: cnn ->  globals()["cnn"]
                 model=globals()[al.model]
-
                 classifier = KerasClassifier(model)
 
                 #globals allows to call a function by a string  Ex: UncertaintySampling(10) ->  globals()["cnn"](10)
                 query_techinc=globals()[al.query_technic](al.n_instances)
-        
-                #load images
-                unlabeled_dataset=UnlabeledDataset.objects.get(id_al=al.id)
-            
-                #get training images from this al
-                training_dataset=TrainingDataset.objects.get(id_al=al.id)
-            
-                pool, x_train, y_train = self.load_images(unlabeled_dataset,training_dataset)
-                
+
                 #create modal framework active learning instance
                 learner = ActiveLearner(
                     classifier,
                     query_techinc,
-                    np.array(x_train,dtype = float),
-                    np.array(y_train,dtype = float)
-                )
-    
-                if(path.exists("media/models/%d.h5" % al.id)): learner.estimator.model.load_weights("media/models/%d.h5" % al.id)
+                    )
+
+                #globals allows to call a function by a string  Ex: cnn ->  globals()["cnn"]
+                if(path.exists("media/models/%d.h5" % al.id)): 
+                    learner.estimator.model=load_model("media/models/%d.h5" % al.id)
+                else:
+                    training_dataset=TrainingDataset.objects.get(id_al=al.id)
+                    x_train, y_train = self.load_train_images(training_dataset)
+                    learner.teach(np.array(x_train,dtype = float),np.array(y_train,dtype = float))
+                
+                #load images
+                unlabeled_dataset=UnlabeledDataset.objects.get(id_al=al.id)
+            
+                pool = self.load_unlabeled_images(unlabeled_dataset)
 
                 #get images to anotate
                 index,_=learner.query(np.array(pool))
 
                 al.is_quering=False
                 al.save()
+
                 # return response with zip file with images
                 return self.zip(index,unlabeled_dataset)
         except AL.DoesNotExist:
@@ -140,6 +141,7 @@ class AnotationsViewSet(APIView):
                         
         #globals allows to call a function by a string  Ex: cnn ->  globals()["cnn"]
         model=globals()[al.model]
+        
         classifier = KerasClassifier(model)
             
         #globals allows to call a function by a string  Ex: UncertaintySampling(10) ->  globals()["cnn"](10)
@@ -164,8 +166,7 @@ class AnotationsViewSet(APIView):
                 np.array(y_train,dtype = float)
             )
 
-        if(path.exists("media/models/%d.h5" % al.id)): learner.estimator.model.load_weights("media/models/%d.h5" % al.id)
-    
+        if(path.exists("media/models/%d.h5" % al.id)): learner.estimator.model=load_model("media/models/%d.h5" % al.id)
         learner.teach(x,y)
 
         testing_images=TestingImage.objects.filter(id_dataset=al.id)
@@ -180,7 +181,7 @@ class AnotationsViewSet(APIView):
             if(image.label==True): y_test.append(1)
             else: y_test.append(0)
 
-        learner.estimator.model.save_weights("media/models/%d.h5" % al.id)
+        learner.estimator.model.save("media/models/%d.h5" % al.id)
 
         accuracy=learner.score(np.array(x_test,dtype = float),np.array(y_test,dtype = float), verbose=0)
         Iteration.objects.create(accuracy=accuracy, id_al=al)
