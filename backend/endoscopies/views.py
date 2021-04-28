@@ -19,8 +19,12 @@ from PIL import Image
 from modAL.models import ActiveLearner
 from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
 from tensorflow.keras.models import load_model
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
+from accounts.decorators import medic_required
 
-    
+
+@method_decorator([login_required, medic_required], name='dispatch')  
 class Endoscopy_APIView(APIView):
     parser_classes = (MultiPartParser, FormParser, JSONParser)
 
@@ -44,7 +48,7 @@ class Endoscopy_APIView(APIView):
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
    
-
+@method_decorator([login_required, medic_required], name='dispatch')  
 class Endoscopy_APIView_Detail(APIView):
     serializer_class = FrameSerializer
 
@@ -83,7 +87,7 @@ class Endoscopy_APIView_Detail(APIView):
         except Endoscopy.DoesNotExist:
             raise Http404
         
-
+@method_decorator([login_required, medic_required], name='dispatch')  
 class Predict_APIView_Detail(APIView):
 
     def get(self, request, id, format=None):

@@ -5,14 +5,19 @@ from .serializers import ExamSerializer
 from rest_framework.response import Response
 from django.http import Http404
 from rest_framework import permissions
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
+from accounts.decorators import medic_required
 
+
+@method_decorator([login_required, medic_required], name='dispatch')  
 class ExamViewSet(ModelViewSet):
     queryset = Exam.objects.all()
     serializer_class = ExamSerializer
     
-    #É necessário estar autenticado para inserir informação e ver informação
-    #permission_classes = (permissions.IsAuthenticated,)
 
+
+@method_decorator([login_required, medic_required], name='dispatch')  
 class Exam_Pacient_APIView(APIView):
     serializer_class = ExamSerializer
 

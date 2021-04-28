@@ -9,7 +9,12 @@ from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 import tempfile, zipfile
 from django.http import HttpResponse
 from wsgiref.util import FileWrapper
-    
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required   
+
+
+@method_decorator([login_required, staff_member_required], name='dispatch')
 class Testing_APIView(APIView):
     parser_classes = (MultiPartParser, FormParser, JSONParser)
 
@@ -36,7 +41,7 @@ class Testing_APIView(APIView):
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
    
-
+@method_decorator([login_required, staff_member_required], name='dispatch')
 class Testing_APIView_Detail(APIView):
     serializer_class = TestingImageSerializer
 

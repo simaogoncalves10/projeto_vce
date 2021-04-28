@@ -21,8 +21,12 @@ import numpy as np
 from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
 from PIL import Image
 from tensorflow.keras.models import load_model
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
+from accounts.decorators import specialist_required
 
 
+@method_decorator([login_required, specialist_required], name='dispatch')
 class AnotationsViewSet(APIView):
 
     def zip(self,index,unlabeled_dataset):

@@ -4,7 +4,13 @@ from .models import AL, Iteration
 from .serializers import ALSerializer, IterationSerializer
 from rest_framework import status
 from django.http import Http404
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 
+
+
+@method_decorator([login_required, staff_member_required], name='dispatch')
 class ALsViewSet(APIView):
     
     def get(self, request, format=None, *args, **kwargs):
@@ -21,7 +27,7 @@ class ALsViewSet(APIView):
             return Response(al_serializer.data, status=status.HTTP_201_CREATED)
         return Response(al_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
+@method_decorator([login_required, staff_member_required], name='dispatch')
 class AL_APIView_Detail(APIView):
     serializer_class = ALSerializer
     
@@ -49,7 +55,7 @@ class AL_APIView_Detail(APIView):
         al.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-        
+@method_decorator([login_required, staff_member_required], name='dispatch')        
 class TrainActivateALsViewSet(APIView):
     def get(self, request, format=None):
         try:
@@ -59,7 +65,7 @@ class TrainActivateALsViewSet(APIView):
         except AL.DoesNotExist:
             raise Http404
 
-
+@method_decorator([login_required, staff_member_required], name='dispatch')
 class TrainActivateALsViewSet_Detail(APIView):
 
     def get(self, request, pk, format=None):
@@ -91,7 +97,7 @@ class TrainActivateALsViewSet_Detail(APIView):
         except AL.DoesNotExist:
             raise Http404            
         
-
+@method_decorator([login_required, staff_member_required], name='dispatch')
 class PredictActivateALsViewSet(APIView):
     def get(self, request, format=None):
         try:
@@ -101,7 +107,7 @@ class PredictActivateALsViewSet(APIView):
         except AL.DoesNotExist:
             raise Http404
 
-
+@method_decorator([login_required, staff_member_required], name='dispatch')
 class PredictActivateALsViewSet_Detail(APIView):
 
     def get(self, request, pk, format=None):
@@ -133,7 +139,7 @@ class PredictActivateALsViewSet_Detail(APIView):
         except AL.DoesNotExist:
             raise Http404            
         
-
+@method_decorator([login_required, staff_member_required], name='dispatch')
 class Iteration_APIView_Detail(APIView):
     serializer_class = IterationSerializer
 
